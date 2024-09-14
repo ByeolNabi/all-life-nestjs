@@ -17,7 +17,7 @@ export class ShelterType extends BaseEntity {
   desc: string;
 
   @OneToMany((type) => ShelterInfo, (shelterInfo) => shelterInfo.shelterType, {
-    eager: true,
-  }) // 대피소 정보 < 점검 답변
+    eager: false,
+  }) // 대피소 종류 < 대피소 정보
   shelterInfo: ShelterChecklistAnswer;
 }
