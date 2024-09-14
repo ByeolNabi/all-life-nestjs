@@ -17,3 +17,15 @@ config 함께 관리하기
 ```
 npm install config --save
 ```
+
+인증 관련 모듈 설치
+
+```
+암호화
+npm install bcryptjs --save
+import * as bcrypt from 'bcryptjs'
+```
+```
+jwt와 passport 모듈
+npm install @nestjs/jwt @nestjs/passport passport passport-jwt
+```
