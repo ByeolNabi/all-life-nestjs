@@ -5,15 +5,20 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { UserTypeEnum } from './enum/userType.enum';
 import { Language } from './language.entity';
 import { ShelterChecklistAnswer } from './shelter_checklist_answer.entity';
 
 @Entity()
+@Unique(['user_id'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
-  user_id: number;
+  id:number;
+
+  @Column()
+  user_id: string;
 
   @Column()
   password: string;
@@ -39,5 +44,4 @@ export class User extends BaseEntity {
     { eager: false },
   ) // 유저정보 < 점검 답변
   shelterChecklistAnswer: ShelterChecklistAnswer;
-  s;
 }
