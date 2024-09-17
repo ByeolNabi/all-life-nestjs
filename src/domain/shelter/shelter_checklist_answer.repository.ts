@@ -3,7 +3,7 @@ import { ShelterChecklistAnswer } from 'src/entity/shelter_checklist_answer.enti
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
-class ShelterChecklistAnswerRepository extends Repository<ShelterChecklistAnswerRepository> {
+export class ShelterChecklistAnswerRepository extends Repository<ShelterChecklistAnswer> {
   constructor(private dataSource: DataSource) {
     super(ShelterChecklistAnswer, dataSource.createEntityManager());
   }

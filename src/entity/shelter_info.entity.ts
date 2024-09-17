@@ -30,5 +30,5 @@ export class ShelterInfo extends BaseEntity {
     (shelterChecklistAnswer) => shelterChecklistAnswer.shelterInfo,
     { eager: false },
   ) // 대피소 정보 < 점검 답변
-  shelterChecklistAnswer: ShelterChecklistAnswer;
+  shelterChecklistAnswer: ShelterChecklistAnswer[];
 }

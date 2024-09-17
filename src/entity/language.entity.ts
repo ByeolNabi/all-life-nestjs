@@ -17,5 +17,5 @@ export class Language extends BaseEntity {
   type: LanguageTypeEnum;
 
   @OneToMany((type) => User, (user) => user.language, { eager: false }) // 언어분류 < 유저정보
-  user: User;
+  user: User[]
 }

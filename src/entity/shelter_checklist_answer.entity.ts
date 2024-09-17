@@ -15,7 +15,7 @@ export class ShelterChecklistAnswer extends BaseEntity {
   a_id: number;
 
   @Column()
-  score: string;
+  score: number;
 
   @ManyToOne((type) => User, (user) => user.shelterChecklistAnswer, {
     eager: false,
@@ -36,6 +36,6 @@ export class ShelterChecklistAnswer extends BaseEntity {
     { eager: false },
   ) // 점검 답변 > 대피소 정보
   shelterInfo: ShelterInfo;
-
-  // 대피소 정보
 }
+
+// 

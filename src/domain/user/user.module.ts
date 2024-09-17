@@ -6,10 +6,13 @@ import { User } from 'src/entity/user.entity';
 import { UserRepository } from './user.repository';
 import { JwtModule } from '@nestjs/jwt';
 import * as config from 'config';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './jwt.strategy';
 
 const jwtConfig = config.get('jwt');
 @Module({
   imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
       secret: jwtConfig.secret,
@@ -19,6 +22,7 @@ const jwtConfig = config.get('jwt');
     }),
   ],
   controllers: [UserController],
-  providers: [UserService, UserRepository],
+  providers: [UserService, UserRepository, JwtStrategy],
+  exports: [JwtStrategy, PassportModule],
 })
 export class UserModule {}

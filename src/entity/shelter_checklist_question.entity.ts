@@ -20,5 +20,5 @@ export class ShelterChecklistQuestion extends BaseEntity {
     (shelterChecklistAnswer) => shelterChecklistAnswer.shelterChecklistQuestion,
     { eager: false },
   ) // 점검 질문지 < 점검 답변
-  shelterChecklistAnswer: ShelterChecklistAnswer;
+  shelterChecklistAnswer: ShelterChecklistAnswer[];
 }
