@@ -5,9 +5,9 @@ import { SignUpDto } from './dto/signup.dto';
 
 @Controller('user')
 export class UserController {
-  private logger = new Logger('UserController');
-
   constructor(private userService: UserService) {}
+  
+  private logger = new Logger('UserController');
 
   @Post('/signup')
   signUp(@Body() signUpDto: SignUpDto) {

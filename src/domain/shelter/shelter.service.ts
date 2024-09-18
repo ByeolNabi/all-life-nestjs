@@ -6,6 +6,7 @@ import { ShelterChecklistQuestion } from 'src/entity/shelter_checklist_question.
 import { AnswerDto } from './dto/answer.dto';
 import { User } from 'src/entity/user.entity';
 import { ShelterInfo } from 'src/entity/shelter_info.entity';
+import { AnswerArrayDto } from './dto/answer_array.dto';
 
 @Injectable()
 export class ShelterService {
@@ -16,6 +17,7 @@ export class ShelterService {
   ) {}
 
   /// Info
+  
   async getShelterInfo(id: number): Promise<ShelterInfo> {
     return await this.shelterInfoRepository.findOne({
       where: { shelter_info_id: id },
@@ -38,6 +40,32 @@ export class ShelterService {
     });
 
     return await this.shelterChecklistAnswerRepository.save(answer);
+  }
+
+  async createShelterChecklistAnswers(
+    answerArrayDto: AnswerArrayDto,
+    user: User,
+  ) {
+    let answers = [];
+
+    for (let i = 0; i < answerArrayDto.answers.length; i++) {
+      const { q_id, score, shelter_info_id } = answerArrayDto.answers[i];
+
+      const shelterChecklistQuestion =
+        await this.getShelterChecklistQuestion(q_id);
+      const shelterInfo = await this.getShelterInfo(shelter_info_id);
+
+      const answer = this.shelterChecklistAnswerRepository.create({
+        user,
+        score,
+        shelterInfo,
+        shelterChecklistQuestion,
+      });
+
+      answers.push(answer);
+    }
+
+    return await this.shelterChecklistAnswerRepository.save(answers);
   }
 
   /// Question
