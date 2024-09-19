@@ -1,10 +1,11 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class AnswerDto {
+export class ShelterCodeDto {
   @IsNotEmpty()
   @IsNumber()
-  q_id: number;
-  @IsNumber()
+  c1: number;
+
   @IsNotEmpty()
-  score: number;
+  @IsNumber()
+  c2: number;
 }

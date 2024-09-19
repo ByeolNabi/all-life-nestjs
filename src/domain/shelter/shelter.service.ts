@@ -7,6 +7,7 @@ import { AnswerDto } from './dto/answer.dto';
 import { User } from 'src/entity/user.entity';
 import { ShelterInfo } from 'src/entity/shelter_info.entity';
 import { AnswerArrayDto } from './dto/answer_array.dto';
+import { ShelterCodeDto } from './dto/shelter_ids.dto';
 
 @Injectable()
 export class ShelterService {
@@ -17,43 +18,67 @@ export class ShelterService {
   ) {}
 
   /// Info
-  
-  async getShelterInfo(id: number): Promise<ShelterInfo> {
+  async getShelterInfo(shelterCodeDto: ShelterCodeDto): Promise<ShelterInfo> {
+    const { c1, c2 } = shelterCodeDto;
     return await this.shelterInfoRepository.findOne({
-      where: { shelter_info_id: id },
+      where: { shelter_code1: c1, shelter_code2: c2 },
     });
   }
 
   /// Answer
-  async createShelterChecklistAnswer(answerDto: AnswerDto, user: User) {
-    const { q_id, score, shelter_info_id } = answerDto;
+  async getReviews(shelterCodeDto: ShelterCodeDto) {
+    const shelterInfo = await this.getShelterInfo(shelterCodeDto);
 
-    const shelterChecklistQuestion =
-      await this.getShelterChecklistQuestion(q_id);
-    const shelterInfo = await this.getShelterInfo(shelter_info_id);
-
-    const answer = this.shelterChecklistAnswerRepository.create({
-      user,
-      score,
-      shelterInfo,
-      shelterChecklistQuestion,
+    return this.shelterChecklistAnswerRepository.find({
+      where: { shelterInfo },
+      select: {
+        user: {
+          user_id: true,
+          username: true,
+        },
+      },
+      order: {
+        user: {
+          user_id: 'ASC',
+        },
+        a_id: 'ASC',
+      },
+      relations: {
+        user: true,
+      },
     });
-
-    return await this.shelterChecklistAnswerRepository.save(answer);
   }
+
+  // async createShelterChecklistAnswer(answerDto: AnswerDto, user: User) {
+  //   const { q_id, score, shelter_info_id } = answerDto;
+
+  //   const shelterChecklistQuestion =
+  //     await this.getShelterChecklistQuestion(q_id);
+  //   const shelterInfo = await this.getShelterInfo(shelter_info_id);
+
+  //   const answer = this.shelterChecklistAnswerRepository.create({
+  //     user,
+  //     score,
+  //     shelterInfo,
+  //     shelterChecklistQuestion,
+  //   });
+
+  //   return await this.shelterChecklistAnswerRepository.save(answer);
+  // }
 
   async createShelterChecklistAnswers(
     answerArrayDto: AnswerArrayDto,
+    shelterCodeDto: ShelterCodeDto,
     user: User,
   ) {
     let answers = [];
+    const shelterInfo = await this.getShelterInfo(shelterCodeDto);
 
     for (let i = 0; i < answerArrayDto.answers.length; i++) {
-      const { q_id, score, shelter_info_id } = answerArrayDto.answers[i];
+      const { q_id, score } = answerArrayDto.answers[i];
 
       const shelterChecklistQuestion =
         await this.getShelterChecklistQuestion(q_id);
-      const shelterInfo = await this.getShelterInfo(shelter_info_id);
 
       const answer = this.shelterChecklistAnswerRepository.create({
         user,

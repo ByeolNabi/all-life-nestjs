@@ -26,7 +26,7 @@ export class ShelterChecklistAnswer extends BaseEntity {
     (type) => ShelterChecklistQuestion,
     (shelterChecklistQuestion) =>
       shelterChecklistQuestion.shelterChecklistAnswer,
-    { eager: false },
+    { eager: true },
   ) // 점검 답변 > 점검 질문지
   shelterChecklistQuestion: ShelterChecklistQuestion;
 
@@ -37,5 +37,3 @@ export class ShelterChecklistAnswer extends BaseEntity {
   ) // 점검 답변 > 대피소 정보
   shelterInfo: ShelterInfo;
 }
-
-// 
