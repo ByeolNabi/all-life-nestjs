@@ -14,14 +14,11 @@ export class ShelterInfo extends BaseEntity {
   shelter_info_id: number;
 
   @Column()
-  score: string;
+  shelter_uuid: string;
 
-  @Column()
-  shelter_code1: number;
-  
-  @Column()
-  shelter_code2: number;
-  
+  @Column({ default: 0, type: 'float' })
+  score: number;
+
   @OneToMany(
     (type) => ShelterChecklistAnswer,
     (shelterChecklistAnswer) => shelterChecklistAnswer.shelterInfo,

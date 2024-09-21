@@ -32,35 +32,42 @@ npm install @nestjs/jwt @nestjs/passport passport passport-jwt
 
 shelterChecklistAnswers
 ```
-[
-    {
-        "q_id": 100,
-        "shelter_info_id": 3,
-        "score": 8
-    },{
-        "q_id": 1,
-        "shelter_info_id": 3,
-        "score": 0
-    },{
-        "q_id": 2,
-        "shelter_info_id": 3,
-        "score": 1
-    },{
-        "q_id": 3,
-        "shelter_info_id": 3,
-        "score": 1
-    },{
-        "q_id": 4,
-        "shelter_info_id": 3,
-        "score": 0
-    },{
-        "q_id": 5,
-        "shelter_info_id": 3,
-        "score": 0
-    },{
-        "q_id": 6,
-        "shelter_info_id": 3,
-        "score": 1
-    }
-]
+{
+    "answers": [
+        {
+            "q_id": 100,
+            "score": 9
+        },
+        {
+            "q_id": 1,
+            "score": 1
+        },
+        {
+            "q_id": 2,
+            "score": 1
+        },
+        {
+            "q_id": 3,
+            "score": 1
+        },
+        {
+            "q_id": 4,
+            "score": 1
+        },
+        {
+            "q_id": 5,
+            "score": 0
+        },
+        {
+            "q_id": 6,
+            "score": 0
+        }
+    ]
+}
 ```
+
+api테스트
+1. 회원가입 2개 하기
+2. 질문 넣기
+3. 대피소 넣기
+4. 회원 2개로 대피소 평가하기

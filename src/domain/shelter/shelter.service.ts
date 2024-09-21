@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ShelterInfoRepository } from './shelter_info.repository';
 import { ShelterChecklistAnswerRepository } from './shelter_checklist_answer.repository';
 import { ShelterChecklistQuestionRepository } from './shelter_checklist_question.repository';
@@ -7,7 +7,7 @@ import { AnswerDto } from './dto/answer.dto';
 import { User } from 'src/entity/user.entity';
 import { ShelterInfo } from 'src/entity/shelter_info.entity';
 import { AnswerArrayDto } from './dto/answer_array.dto';
-import { ShelterCodeDto } from './dto/shelter_ids.dto';
+import { ShelterUuidDto } from './dto/shelter_uuid.dto';
 
 @Injectable()
 export class ShelterService {
@@ -17,19 +17,57 @@ export class ShelterService {
     private shelterChecklistQuestionRepository: ShelterChecklistQuestionRepository,
   ) {}
 
+  private logger = new Logger('Shelterservice');
+
   /// Info
-  async getShelterInfo(shelterCodeDto: ShelterCodeDto): Promise<ShelterInfo> {
-    const { c1, c2 } = shelterCodeDto;
-    return await this.shelterInfoRepository.findOne({
-      where: { shelter_code1: c1, shelter_code2: c2 },
+  async getShelterInfo(shelterUuidDto: ShelterUuidDto): Promise<ShelterInfo> {
+    const { uuid } = shelterUuidDto;
+    this.logger.verbose(
+      `getShelterInfo, shelterUuidDto : ${shelterUuidDto}, uuid : "${uuid}"`,
+    );
+    const shelterInfo = await this.shelterInfoRepository.findOne({
+      where: { shelter_uuid: uuid },
     });
+    this.logger.verbose(`getShelterInfo, shelterInfo : ${shelterInfo}`);
+    return shelterInfo;
+  }
+
+  /// score
+  async updateShelterScore(shelterInfo: ShelterInfo, avg_score: number) {
+    shelterInfo.score = avg_score;
+    this.logger.verbose(
+      `updateShelterScore, avg_ShelterInfo : ${JSON.stringify(shelterInfo)}`,
+    );
+    let result = await this.shelterInfoRepository.save(shelterInfo);
+    return result;
+  }
+
+  // score 점수 다시 저장하기
+  async setShelterAvgScore(shelterInfo: ShelterInfo) {
+    this.logger.verbose(`setShelterAvgScore, shelterInfo : ${shelterInfo}`);
+    const q_number = 100; // 몇 번째 질문인지
+    const shelterChecklistQuestion = (
+      await this.getShelterChecklistQuestion(q_number)
+    )[0];
+    const scoreArray = await this.shelterChecklistAnswerRepository.find({
+      where: { shelterInfo, shelterChecklistQuestion },
+    });
+
+    let total = 0;
+    for (let i = 0; i < scoreArray.length; i++) {
+      total += scoreArray[i].score;
+    }
+
+    let avg = total / scoreArray.length;
+    this.logger.verbose(`setShelterAvgScore, score avg : ${avg}`);
+    return await this.updateShelterScore(shelterInfo, avg);
   }
 
   /// Answer
-  async getReviews(shelterCodeDto: ShelterCodeDto) {
-    const shelterInfo = await this.getShelterInfo(shelterCodeDto);
-
-    return this.shelterChecklistAnswerRepository.find({
+  async getReviews(shelterUuidDto: ShelterUuidDto) {
+    const shelterInfo = await this.getShelterInfo(shelterUuidDto);
+    this.logger.verbose(`getReviews, shelterInfo : ${shelterInfo}`);
+    const reviews = await this.shelterChecklistAnswerRepository.find({
       where: { shelterInfo },
       select: {
         user: {
@@ -41,12 +79,16 @@ export class ShelterService {
         user: {
           user_id: 'ASC',
         },
-        a_id: 'ASC',
+        shelterChecklistQuestion: {
+          q_id: 'ASC',
+        },
       },
       relations: {
         user: true,
       },
     });
+
+    return reviews;
   }
 
   // async createShelterChecklistAnswer(answerDto: AnswerDto, user: User) {
@@ -68,17 +110,18 @@ export class ShelterService {
 
   async createShelterChecklistAnswers(
     answerArrayDto: AnswerArrayDto,
-    shelterCodeDto: ShelterCodeDto,
+    shelterUuidDto: ShelterUuidDto,
     user: User,
   ) {
     let answers = [];
-    const shelterInfo = await this.getShelterInfo(shelterCodeDto);
+    const shelterInfo = await this.getShelterInfo(shelterUuidDto);
 
     for (let i = 0; i < answerArrayDto.answers.length; i++) {
       const { q_id, score } = answerArrayDto.answers[i];
 
-      const shelterChecklistQuestion =
-        await this.getShelterChecklistQuestion(q_id);
+      const shelterChecklistQuestion = (
+        await this.getShelterChecklistQuestion(q_id)
+      )[0];
 
       const answer = this.shelterChecklistAnswerRepository.create({
         user,
@@ -89,17 +132,22 @@ export class ShelterService {
 
       answers.push(answer);
     }
+    const score_result = await this.setShelterAvgScore(shelterInfo); // 점수 다시 계산하는 함수
+    console.log(score_result);
 
     return await this.shelterChecklistAnswerRepository.save(answers);
   }
 
   /// Question
-  // 하나의 장르로만 하고 싶은데...
   async getShelterChecklistQuestion(
-    id: number,
-  ): Promise<ShelterChecklistQuestion> {
-    return await this.shelterChecklistQuestionRepository.findOne({
-      where: { q_id: id },
-    });
+    q_id: number,
+  ): Promise<ShelterChecklistQuestion[]> {
+    if (q_id == 0) {
+      return await this.shelterChecklistQuestionRepository.find();
+    } else {
+      return await this.shelterChecklistQuestionRepository.find({
+        where: { q_id },
+      });
+    }
   }
 }
