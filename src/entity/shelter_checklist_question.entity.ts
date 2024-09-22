@@ -6,15 +6,19 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ShelterChecklistAnswer } from './shelter_checklist_answer.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class ShelterChecklistQuestion extends BaseEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   q_id: number;
 
+  @ApiProperty()
   @Column()
   sentence: string;
 
+  @ApiProperty({ type: [ShelterChecklistAnswer] })
   @OneToMany(
     (type) => ShelterChecklistAnswer,
     (shelterChecklistAnswer) => shelterChecklistAnswer.shelterChecklistQuestion,
