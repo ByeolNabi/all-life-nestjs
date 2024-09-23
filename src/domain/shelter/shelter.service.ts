@@ -32,6 +32,18 @@ export class ShelterService {
     return shelterInfo;
   }
 
+  async createShelterInfo(shelterUuidDto: ShelterUuidDto) {
+    const { uuid } = shelterUuidDto;
+    const shelterInfo = this.shelterInfoRepository.create({
+      shelter_uuid: uuid,
+    });
+    this.logger.verbose(
+      `createShelterInfo, createdShelterInfo : ${JSON.stringify(shelterInfo)}`,
+    );
+    const shelterResult = await this.shelterInfoRepository.save(shelterInfo);
+    return shelterResult;
+  }
+
   /// score
   async updateShelterScore(shelterInfo: ShelterInfo, avg_score: number) {
     shelterInfo.score = avg_score;
@@ -44,7 +56,9 @@ export class ShelterService {
 
   // score 점수 다시 저장하기
   async setShelterAvgScore(shelterInfo: ShelterInfo) {
-    this.logger.verbose(`setShelterAvgScore, shelterInfo : ${shelterInfo}`);
+    this.logger.verbose(
+      `setShelterAvgScore,\n shelterInfo : ${JSON.stringify(shelterInfo)}`,
+    );
     const q_number = 100; // 몇 번째 질문인지
     const shelterChecklistQuestion = (
       await this.getShelterChecklistQuestion(q_number)
@@ -59,7 +73,9 @@ export class ShelterService {
     }
 
     let avg = total / scoreArray.length;
-    this.logger.verbose(`setShelterAvgScore, score avg : ${avg}`);
+    this.logger.verbose(
+      `setShelterAvgScore,\n score avg : ${avg}, total : ${total}, scoreArray : ${scoreArray}`,
+    );
     return await this.updateShelterScore(shelterInfo, avg);
   }
 
@@ -114,7 +130,17 @@ export class ShelterService {
     user: User,
   ) {
     let answers = [];
-    const shelterInfo = await this.getShelterInfo(shelterUuidDto);
+    let shelterInfo = await this.getShelterInfo(shelterUuidDto);
+    this.logger.verbose(
+      `createShelterChecklistAnswers, findedShelterInfo ${shelterInfo}`,
+    );
+    if (!shelterInfo) {
+      //shelterInfo가 없다면... 생성하자
+      this.logger.verbose(
+        `createShelterChecklistAnswers, there are no ShelterInfo, Make shelterInfo with UUID`,
+      );
+      shelterInfo = await this.createShelterInfo(shelterUuidDto);
+    }
 
     for (let i = 0; i < answerArrayDto.answers.length; i++) {
       const { q_id, score } = answerArrayDto.answers[i];
@@ -132,10 +158,11 @@ export class ShelterService {
 
       answers.push(answer);
     }
-    const score_result = await this.setShelterAvgScore(shelterInfo); // 점수 다시 계산하는 함수
-    console.log(score_result);
+    const answerResult = await this.shelterChecklistAnswerRepository.save(answers) // 최종점수 먼저 저장하고 평균을 찾자
 
-    return await this.shelterChecklistAnswerRepository.save(answers);
+    const score_result = await this.setShelterAvgScore(shelterInfo); // 점수 다시 계산하는 함수
+
+    return answerResult;
   }
 
   /// Question

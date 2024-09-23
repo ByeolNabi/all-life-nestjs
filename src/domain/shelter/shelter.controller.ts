@@ -14,12 +14,7 @@ import { GetUser } from '../user/get-user.decorator';
 import { User } from 'src/entity/user.entity';
 import { AnswerArrayDto } from './dto/answer_array.dto';
 import { ShelterUuidDto } from './dto/shelter_uuid.dto';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ShelterChecklistQuestion } from 'src/entity/shelter_checklist_question.entity';
 
 @Controller('shelter')
@@ -69,7 +64,8 @@ export class ShelterController {
       '각 항목에 대한 점검 결과를 answer key에 배열로 저장해서 한 번에 저장합니다.',
   })
   @ApiBody({
-    description: '점검 결과 body<br>q_id(1~6) -> bool 질문[0,1]<br>q_id(100) -> 대피소 별점()[0~10]<br>🫸<code>q_id (1~6, 100)까지 총 7개의 answer를 다같이 보내주세요</code>🫷',
+    description:
+      '점검 결과 body<br>q_id(1~6) -> bool 질문[0,1]<br>q_id(100) -> 대피소 별점()[0~10]<br>🫸<code>q_id (1~6과 100)까지 총 7개의 answer를 다같이 보내주세요</code>🫷',
     type: AnswerArrayDto,
   })
   @ApiQuery({

@@ -16,7 +16,7 @@ export class ShelterInfo extends BaseEntity {
   @Column()
   shelter_uuid: string;
 
-  @Column({ default: 0, type: 'float' })
+  @Column({ type: 'float', default: 0 })
   score: number;
 
   @OneToMany(
