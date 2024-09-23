@@ -8,6 +8,8 @@ import { User } from 'src/entity/user.entity';
 import { ShelterInfo } from 'src/entity/shelter_info.entity';
 import { AnswerArrayDto } from './dto/answer_array.dto';
 import { ShelterUuidDto } from './dto/shelter_uuid.dto';
+import { ShelterChecklistAnswer } from 'src/entity/shelter_checklist_answer.entity';
+import { UserRepository } from '../user/user.repository';
 
 @Injectable()
 export class ShelterService {
@@ -15,6 +17,7 @@ export class ShelterService {
     private shelterInfoRepository: ShelterInfoRepository,
     private shelterChecklistAnswerRepository: ShelterChecklistAnswerRepository,
     private shelterChecklistQuestionRepository: ShelterChecklistQuestionRepository,
+    private userRepository: UserRepository,
   ) {}
 
   private logger = new Logger('Shelterservice');
@@ -80,29 +83,61 @@ export class ShelterService {
   }
 
   /// Answer
-  async getReviews(shelterUuidDto: ShelterUuidDto) {
+  async getReviews(shelterUuidDto: ShelterUuidDto, userId?: string) {
     const shelterInfo = await this.getShelterInfo(shelterUuidDto);
-    this.logger.verbose(`getReviews, shelterInfo : ${shelterInfo}`);
-    const reviews = await this.shelterChecklistAnswerRepository.find({
-      where: { shelterInfo },
-      select: {
-        user: {
-          user_id: true,
-          username: true,
+    this.logger.verbose(
+      `getReviews, shelterInfo : ${JSON.stringify(shelterInfo)}`,
+    );
+    this.logger.verbose(`getReviews, userId : ${userId}`);
+    if (userId) {
+      var user = await this.userRepository.findOne({
+        where: { user_id: userId },
+      });
+      var reviews = await this.shelterChecklistAnswerRepository.find({
+        where: { shelterInfo, user },
+        select: {
+          user: {
+            user_id: true,
+            username: true,
+          },
         },
-      },
-      order: {
-        user: {
-          user_id: 'ASC',
+        order: {
+          user: {
+            user_id: 'ASC',
+          },
+          shelterChecklistQuestion: {
+            q_id: 'ASC',
+          },
         },
-        shelterChecklistQuestion: {
-          q_id: 'ASC',
+        relations: {
+          user: true,
         },
-      },
-      relations: {
-        user: true,
-      },
-    });
+      });
+    } else {
+      var reviews = await this.shelterChecklistAnswerRepository.find({
+        where: { shelterInfo },
+        select: {
+          user: {
+            user_id: true,
+            username: true,
+          },
+        },
+        order: {
+          user: {
+            user_id: 'ASC',
+          },
+          shelterChecklistQuestion: {
+            q_id: 'ASC',
+          },
+        },
+        relations: {
+          user: true,
+        },
+      });
+    }
+    this.logger.verbose(
+      `getReviews, review result : ${JSON.stringify(reviews)}`,
+    );
 
     return reviews;
   }
@@ -158,7 +193,8 @@ export class ShelterService {
 
       answers.push(answer);
     }
-    const answerResult = await this.shelterChecklistAnswerRepository.save(answers) // 최종점수 먼저 저장하고 평균을 찾자
+    const answerResult =
+      await this.shelterChecklistAnswerRepository.save(answers); // 최종점수 먼저 저장하고 평균을 찾자
 
     const score_result = await this.setShelterAvgScore(shelterInfo); // 점수 다시 계산하는 함수
 

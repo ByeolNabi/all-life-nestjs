@@ -50,11 +50,19 @@ export class ShelterController {
       'shelter_uuid를 입력하면 그 shelter에 대한 모든 점검 결과를 가져옵니다.',
   })
   @ApiQuery({
+    name: 'userId',
+    description: '보고싶은 리뷰 작성자의 id를 입력해주세요',
+    required: false,
+  })
+  @ApiQuery({
     name: 'uuid',
     description: 'shelter의 uuid를 입력해주세요.',
   })
-  getReviews(@Query() shelterUuidDto: ShelterUuidDto) {
-    return this.shelterService.getReviews(shelterUuidDto);
+  getReviews(
+    @Query() shelterUuidDto: ShelterUuidDto,
+    @Query('userId') userId?: string,
+  ) {
+    return this.shelterService.getReviews(shelterUuidDto, userId);
   }
 
   @Post('/a') // 전체 답변 넣기
