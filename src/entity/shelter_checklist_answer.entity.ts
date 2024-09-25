@@ -1,6 +1,7 @@
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -8,7 +9,6 @@ import {
 import { ShelterInfo } from './shelter_info.entity';
 import { User } from './user.entity';
 import { ShelterChecklistQuestion } from './shelter_checklist_question.entity';
-import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class ShelterChecklistAnswer extends BaseEntity {
@@ -17,6 +17,9 @@ export class ShelterChecklistAnswer extends BaseEntity {
 
   @Column()
   score: number;
+
+  @CreateDateColumn()
+  created_at: Date;
 
   @ManyToOne((type) => User, (user) => user.shelterChecklistAnswer, {
     eager: false,

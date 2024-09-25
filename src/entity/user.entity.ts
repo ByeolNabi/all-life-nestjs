@@ -8,7 +8,6 @@ import {
   Unique,
 } from 'typeorm';
 import { UserTypeEnum } from './enum/userType.enum';
-import { Language } from './language.entity';
 import { ShelterChecklistAnswer } from './shelter_checklist_answer.entity';
 
 @Entity()
@@ -31,8 +30,8 @@ export class User extends BaseEntity {
   @Column()
   type: UserTypeEnum;
 
-  @ManyToOne((type) => Language, (language) => language.user, { eager: true }) // 유저정보 > 언어 테이블
-  language: Language;
+  @Column()
+  language: string;
 
   @OneToMany(
     (type) => ShelterChecklistAnswer,
