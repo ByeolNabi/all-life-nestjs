@@ -34,6 +34,7 @@ export class SignUpDto {
   term: boolean;
 
   @ApiProperty({
+    description: "( 관계자, 관리자 = 0, 개인사용자 = 100 )",
     type: Number,
   })
   @IsNotEmpty()
