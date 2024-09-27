@@ -54,7 +54,8 @@ export class UserService {
 
     // db의 pw와 body에서 받아온 pw 비교하기
     if (user && (await bcrypt.compare(password, user.password))) {
-      const payload = { user_id };
+      const { user_id, username, email, term, type, language } = user;
+      const payload = { user_id, username, email, term, type, language };
       const accessToken = await this.jwtService.sign(payload);
 
       return { accessToken };
