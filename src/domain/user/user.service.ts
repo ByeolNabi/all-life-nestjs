@@ -18,8 +18,16 @@ export class UserService {
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
-    const { user_id, password, username, email, term, type, language } =
-      signUpDto;
+    const {
+      user_id,
+      password,
+      username,
+      email,
+      term,
+      type,
+      language,
+      location,
+    } = signUpDto;
 
     // pw에 소금치고 해싱하기
     const salt = await bcrypt.genSalt();
@@ -33,6 +41,7 @@ export class UserService {
       term,
       type,
       language,
+      location,
     });
 
     try {
