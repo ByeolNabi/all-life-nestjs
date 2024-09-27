@@ -32,6 +32,7 @@ export class UserController {
   }
 
   @Post('/signin')
+  @ApiBody({ type: SignInDto })
   signIn(@Body() signInDto: SignInDto): Promise<{ accessToken: string }> {
     return this.userService.signIn(signInDto);
   }
