@@ -8,13 +8,13 @@ export class SignUpDto {
   })
   @IsNotEmpty()
   user_id: string;
-  
+
   @ApiProperty({
     type: String,
   })
   @IsNotEmpty()
   password: string;
-  
+
   @ApiProperty({
     type: String,
   })
@@ -34,7 +34,7 @@ export class SignUpDto {
   term: boolean;
 
   @ApiProperty({
-    description: "( 관계자, 관리자 = 0, 개인사용자 = 100 )",
+    description: '( 관계자, 관리자 = 0, 개인사용자 = 100 )',
     type: Number,
   })
   @IsNotEmpty()
@@ -45,4 +45,10 @@ export class SignUpDto {
   })
   @IsNotEmpty()
   language: string;
+
+  @ApiProperty({
+    type: String,
+  })
+  @IsNotEmpty()
+  location: string;
 }

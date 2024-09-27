@@ -33,6 +33,9 @@ export class User extends BaseEntity {
   @Column()
   language: string;
 
+  @Column()
+  location: string;
+
   @OneToMany(
     (type) => ShelterChecklistAnswer,
     (shelterChecklistAnswer) => shelterChecklistAnswer.user,
