@@ -22,7 +22,8 @@ export class UserController {
     "email": "daekyu@email.com",
     "term": "true",
     "type": 0, ( 관리자 = 0, 개인사용자 = 100 )
-    "language": "한국어"
+    "language": "한국어",
+    "location": "부산광역시"
 }`,
   })
   @ApiBody({ type: SignUpDto })
