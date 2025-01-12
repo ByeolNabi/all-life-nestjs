@@ -1,5 +1,7 @@
-all-life 백엔드 코드
----
+# 서비스 설명 페이지
+https://github.com/111jjj111/All-Life
+
+# all-life 백엔드 코드만을 가지고 있는 레포지토리입니다.
 npm 패키지
 pipe 구현
 
